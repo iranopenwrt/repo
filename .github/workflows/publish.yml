@@ -94,20 +94,6 @@ jobs:
           git -C "$RUNNER_TEMP/go-override" sparse-checkout set --no-cone lang/golang
           git -C "$RUNNER_TEMP/go-override" checkout '${{ matrix.go_commit }}'
 
-      - name: Locate host libclang
-        id: libclang
-        shell: bash
-        run: |
-          set -euo pipefail
-          library="$(find -L /usr/lib/llvm-* -maxdepth 2 -type f \( -name 'libclang.so' -o -name 'libclang.so.*' \) -print -quit 2>/dev/null || true)"
-          if [ -z "$library" ]; then
-            sudo apt-get update
-            sudo apt-get install --no-install-recommends --yes libclang-dev
-            library="$(find -L /usr/lib/llvm-* -maxdepth 2 -type f \( -name 'libclang.so' -o -name 'libclang.so.*' \) -print -quit)"
-          fi
-          test -n "$library"
-          echo "path=$(dirname "$library")" >> "$GITHUB_OUTPUT"
-
       - name: Build stale packages in one SDK
         shell: bash
         run: |
@@ -115,18 +101,17 @@ jobs:
           mkdir -p "$RUNNER_TEMP/go-override" "$RUNNER_TEMP/ci-output"
           sudo chown -R 1000:1000 "$RUNNER_TEMP/signing" "$RUNNER_TEMP/go-override" "$RUNNER_TEMP/ci-output"
           docker run --rm \
+            --user root \
             --env ARCH='${{ matrix.arch }}' \
-            --env LIBCLANG_PATH=/host-libclang \
             --env OUTPUT_PACKAGES='${{ matrix.outputs }}' \
             --env SDK_VERSION='${{ matrix.version }}' \
             --env SOURCES='${{ matrix.sources }}' \
             --volume "$GITHUB_WORKSPACE:/feed:ro" \
             --volume "$RUNNER_TEMP/go-override:/go-override:ro" \
-            --volume '${{ steps.libclang.outputs.path }}:/host-libclang:ro' \
             --volume "$RUNNER_TEMP/signing:/signing:ro" \
             --volume "$RUNNER_TEMP/ci-output:/artifacts" \
             'ghcr.io/openwrt/sdk:${{ matrix.arch }}-${{ matrix.version }}' \
-            bash /feed/ci/sdk-build.sh
+            bash /feed/ci/sdk-entrypoint.sh
           sudo chown -R "$(id -u):$(id -g)" "$RUNNER_TEMP/ci-output"
 
       - name: Record and validate build outputs
