@@ -1,0 +1,11 @@
+#REPLACE PORT 9999 according to your server.yaml
+chain raw_prerouting {
+  type filter hook prerouting priority raw; policy accept;
+  tcp dport 9999 counter notrack
+}
+chain raw_output {
+  type filter hook output priority raw; policy accept;
+  # th sport 9999 tcp flags rst counter drop
+  # tcp sport 9999 counter notrack
+  tcp sport 9999 counter notrack tcp flags rst counter drop
+}
