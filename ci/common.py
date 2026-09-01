@@ -24,8 +24,8 @@ def load_config(path: Path) -> dict:
     for release in releases:
         _safe(release["series"], "release series")
         _safe(release["version"], "release version")
-        if release.get("go_ref") not in (None, "main"):
-            raise ValueError("go_ref currently supports only null or 'main'")
+        if release.get("go_ref") is not None:
+            _safe(release["go_ref"], "Go feed ref")
     for arch in architectures:
         _safe(arch, "architecture")
     for package in packages:
@@ -71,4 +71,3 @@ def _require_unique(items: list, key: str | None = None) -> None:
     values = [item[key] for item in items] if key else items
     if len(values) != len(set(values)):
         raise ValueError(f"duplicate values in {key or 'list'}")
-

@@ -35,14 +35,19 @@ jobs:
             git archive FETCH_HEAD | tar -x -C _site
           fi
 
-      - name: Resolve OpenWrt packages main
+      - name: Resolve OpenWrt packages refs
         id: go
         shell: bash
         run: |
           set -euo pipefail
-          sha="$(git ls-remote https://github.com/openwrt/packages.git refs/heads/main | cut -f1)"
-          test -n "$sha"
-          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          shas='{}'
+          while IFS= read -r ref; do
+            [ -n "$ref" ] || continue
+            sha="$(git ls-remote https://github.com/openwrt/packages.git "refs/heads/$ref" | cut -f1)"
+            test -n "$sha" || { echo "OpenWrt packages ref not found: $ref" >&2; exit 1; }
+            shas="$(jq --arg ref "$ref" --arg sha "$sha" '. + {($ref): $sha}' <<< "$shas")"
+          done < <(jq -r '.releases[].go_ref // empty' .github/repository.json | sort -u)
+          echo "shas=$(jq -c . <<< "$shas")" >> "$GITHUB_OUTPUT"
 
       - name: Plan minimal build matrix
         id: plan
@@ -51,7 +56,7 @@ jobs:
             --config .github/repository.json \
             --repo . \
             --site _site \
-            --go-main-sha '${{ steps.go.outputs.sha }}' \
+            --go-shas '${{ steps.go.outputs.shas }}' \
             --github-output "$GITHUB_OUTPUT"
 
   build:

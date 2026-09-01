@@ -12,12 +12,13 @@ def main() -> None:
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--repo", type=Path, required=True)
     parser.add_argument("--site", type=Path, required=True)
-    parser.add_argument("--go-main-sha", required=True)
+    parser.add_argument("--go-shas", required=True)
     parser.add_argument("--github-output", type=Path)
     args = parser.parse_args()
 
     config = load_config(args.config)
     manifest = load_manifest(args.site)
+    go_shas = json.loads(args.go_shas)
     key_changed = not (args.site / "key.pem").is_file() or (
         (args.site / "key.pem").read_bytes() != (args.repo / "key.pem").read_bytes()
     )
@@ -29,7 +30,10 @@ def main() -> None:
     expected_repositories = set()
 
     for release in config["releases"]:
-        go_commit = args.go_main_sha if release.get("go_ref") == "main" else ""
+        go_ref = release.get("go_ref")
+        go_commit = go_shas.get(go_ref, "") if go_ref else ""
+        if go_ref and not go_commit:
+            raise ValueError(f"no commit resolved for Go feed ref {go_ref}")
         for arch in config["architectures"]:
             repo_key = f"{release['series']}/{arch}"
             expected_repositories.add(repo_key)

@@ -3,7 +3,7 @@
     {
       "series": "25.12",
       "version": "25.12.5",
-      "go_ref": "main"
+      "go_ref": "master"
     }
   ],
   "architectures": [
@@ -37,4 +37,3 @@
     }
   ]
 }
-
