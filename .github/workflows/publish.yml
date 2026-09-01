@@ -1,0 +1,250 @@
+name: Build and publish APK repository
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: apk-repository-publish
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      has_builds: ${{ steps.plan.outputs.has_builds }}
+      has_changes: ${{ steps.plan.outputs.has_changes }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Load current repository snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _site
+          if git ls-remote --exit-code origin refs/heads/gh-pages >/dev/null 2>&1; then
+            git fetch --depth=1 origin gh-pages
+            git archive FETCH_HEAD | tar -x -C _site
+          fi
+
+      - name: Resolve OpenWrt packages main
+        id: go
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha="$(git ls-remote https://github.com/openwrt/packages.git refs/heads/main | cut -f1)"
+          test -n "$sha"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Plan minimal build matrix
+        id: plan
+        run: |
+          python3 ci/plan.py \
+            --config .github/repository.json \
+            --repo . \
+            --site _site \
+            --go-main-sha '${{ steps.go.outputs.sha }}' \
+            --github-output "$GITHUB_OUTPUT"
+
+  build:
+    needs: prepare
+    if: needs.prepare.outputs.has_builds == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    name: ${{ matrix.series }} / ${{ matrix.arch }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Verify signing key
+        shell: bash
+        env:
+          APK_PRIVATE_KEY: ${{ secrets.APK_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$APK_PRIVATE_KEY" || { echo 'APK_PRIVATE_KEY is not configured' >&2; exit 1; }
+          mkdir -p "$RUNNER_TEMP/signing" "$RUNNER_TEMP/ci-output/packages"
+          install -m 0600 /dev/null "$RUNNER_TEMP/signing/private-key.pem"
+          printf '%s\n' "$APK_PRIVATE_KEY" > "$RUNNER_TEMP/signing/private-key.pem"
+          private_hash="$(openssl pkey -in "$RUNNER_TEMP/signing/private-key.pem" -pubout -outform DER 2>/dev/null | sha256sum | cut -d' ' -f1)"
+          public_hash="$(openssl pkey -pubin -in key.pem -outform DER 2>/dev/null | sha256sum | cut -d' ' -f1)"
+          test "$private_hash" = "$public_hash" || { echo 'APK_PRIVATE_KEY does not match key.pem' >&2; exit 1; }
+
+      - name: Fetch selected Go feed
+        if: matrix.go_commit != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --filter=blob:none --no-checkout https://github.com/openwrt/packages.git "$RUNNER_TEMP/go-override"
+          git -C "$RUNNER_TEMP/go-override" sparse-checkout set --no-cone lang/golang
+          git -C "$RUNNER_TEMP/go-override" checkout '${{ matrix.go_commit }}'
+
+      - name: Build stale packages in one SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/go-override" "$RUNNER_TEMP/ci-output"
+          sudo chown -R 1000:1000 "$RUNNER_TEMP/signing" "$RUNNER_TEMP/go-override" "$RUNNER_TEMP/ci-output"
+          docker run --rm \
+            --env ARCH='${{ matrix.arch }}' \
+            --env OUTPUT_PACKAGES='${{ matrix.outputs }}' \
+            --env SDK_VERSION='${{ matrix.version }}' \
+            --env SOURCES='${{ matrix.sources }}' \
+            --volume "$GITHUB_WORKSPACE:/feed:ro" \
+            --volume "$RUNNER_TEMP/go-override:/go-override:ro" \
+            --volume "$RUNNER_TEMP/signing:/signing:ro" \
+            --volume "$RUNNER_TEMP/ci-output:/artifacts" \
+            'ghcr.io/openwrt/sdk:${{ matrix.arch }}-${{ matrix.version }}' \
+            bash /feed/ci/sdk-build.sh
+          sudo chown -R "$(id -u):$(id -g)" "$RUNNER_TEMP/ci-output"
+
+      - name: Record and validate build outputs
+        run: |
+          python3 ci/record_build.py \
+            --config .github/repository.json \
+            --repo . \
+            --artifacts "$RUNNER_TEMP/ci-output" \
+            --series '${{ matrix.series }}' \
+            --sdk-version '${{ matrix.version }}' \
+            --arch '${{ matrix.arch }}' \
+            --go-commit '${{ matrix.go_commit }}' \
+            --sources '${{ matrix.sources }}'
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages--${{ matrix.series }}--${{ matrix.arch }}
+          path: ${{ runner.temp }}/ci-output
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Remove signing key
+        if: always()
+        shell: bash
+        run: sudo rm -f "$RUNNER_TEMP/signing/private-key.pem"
+
+  deploy:
+    needs: [prepare, build]
+    if: >-
+      always() &&
+      needs.prepare.outputs.has_changes == 'true' &&
+      (needs.build.result == 'success' || needs.build.result == 'skipped')
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Confirm GitHub Pages is enabled
+        uses: actions/configure-pages@v5
+
+      - name: Check out generated branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code origin refs/heads/gh-pages >/dev/null 2>&1; then
+            git fetch --depth=1 origin gh-pages:refs/remotes/origin/gh-pages
+            git worktree add --detach _site refs/remotes/origin/gh-pages
+          else
+            git worktree add --detach _site HEAD
+            git -C _site checkout --orphan gh-pages
+            git -C _site rm -rf .
+          fi
+
+      - name: Download built packages
+        if: needs.prepare.outputs.has_builds == 'true'
+        uses: actions/download-artifact@v5
+        with:
+          pattern: packages--*
+          path: _built
+
+      - name: Merge repository snapshot
+        run: |
+          mkdir -p _built
+          python3 ci/publish.py \
+            --config .github/repository.json \
+            --repo . \
+            --site _site \
+            --artifacts _built \
+            --index-list _site/indexes.txt
+
+      - name: Verify deployment signing key
+        shell: bash
+        env:
+          APK_PRIVATE_KEY: ${{ secrets.APK_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$APK_PRIVATE_KEY" || { echo 'APK_PRIVATE_KEY is not configured' >&2; exit 1; }
+          mkdir -p "$RUNNER_TEMP/signing"
+          install -m 0600 /dev/null "$RUNNER_TEMP/signing/private-key.pem"
+          printf '%s\n' "$APK_PRIVATE_KEY" > "$RUNNER_TEMP/signing/private-key.pem"
+          private_hash="$(openssl pkey -in "$RUNNER_TEMP/signing/private-key.pem" -pubout -outform DER 2>/dev/null | sha256sum | cut -d' ' -f1)"
+          public_hash="$(openssl pkey -pubin -in key.pem -outform DER 2>/dev/null | sha256sum | cut -d' ' -f1)"
+          test "$private_hash" = "$public_hash" || { echo 'APK_PRIVATE_KEY does not match key.pem' >&2; exit 1; }
+
+      - name: Regenerate signed indexes
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -s _site/indexes.txt ]; then
+            index_sdk="$(jq -r '.releases[0].version' .github/repository.json)"
+            sudo chown -R 1000:1000 "$RUNNER_TEMP/signing" _site
+            docker run --rm \
+              --volume "$GITHUB_WORKSPACE:/feed:ro" \
+              --volume "$RUNNER_TEMP/signing:/signing:ro" \
+              --volume "$GITHUB_WORKSPACE/_site:/site" \
+              "ghcr.io/openwrt/sdk:x86_64-${index_sdk}" \
+              bash /feed/ci/sdk-index.sh
+            sudo chown -R "$(id -u):$(id -g)" _site
+          else
+            rm -f _site/indexes.txt
+          fi
+
+      - name: Validate final repository
+        run: python3 ci/verify_site.py --config .github/repository.json --site _site
+
+      - name: Replace generated branch snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C _site config user.name github-actions
+          git -C _site config user.email github-actions@github.com
+          git -C _site add -A
+          tree="$(git -C _site write-tree)"
+          commit="$(printf 'Publish APK repository for %s\n' "$GITHUB_SHA" | git -C _site commit-tree "$tree")"
+          old="$(git ls-remote origin refs/heads/gh-pages | cut -f1)"
+          git push origin "$commit:refs/heads/gh-pages" \
+            --force-with-lease="refs/heads/gh-pages:${old}"
+
+      - name: Prepare Pages artifact
+        shell: bash
+        run: |
+          mkdir _pages
+          cp -a _site/. _pages/
+          rm -f _pages/.git
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _pages
+
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Remove signing key
+        if: always()
+        shell: bash
+        run: sudo rm -f "$RUNNER_TEMP/signing/private-key.pem"

@@ -1,0 +1,40 @@
+{
+  "releases": [
+    {
+      "series": "25.12",
+      "version": "25.12.5",
+      "go_ref": "main"
+    }
+  ],
+  "architectures": [
+    "arm_cortex-a7_neon-vfpv4",
+    "aarch64_cortex-a53",
+    "aarch64_cortex-a72",
+    "aarch64_cortex-a76",
+    "arm_cortex-a9_vfpv3-d16",
+    "x86_64"
+  ],
+  "packages": [
+    {
+      "source": "aether",
+      "toolchain": "rust",
+      "outputs": ["aether"]
+    },
+    {
+      "source": "chisel",
+      "toolchain": "go",
+      "outputs": ["chisel"]
+    },
+    {
+      "source": "paqet",
+      "toolchain": "go",
+      "outputs": ["paqet"]
+    },
+    {
+      "source": "psiphon-tunnel-core",
+      "toolchain": "go",
+      "outputs": ["psiphon", "psiphond"]
+    }
+  ]
+}
+

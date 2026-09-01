@@ -1,0 +1,6 @@
+_built/
+_site/
+ci-output/
+__pycache__/
+*.pyc
+iranopenwrt-private.pem

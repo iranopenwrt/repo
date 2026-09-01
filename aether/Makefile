@@ -20,7 +20,7 @@ PKG_BUILD_PARALLEL:=1
 MAKE_PATH:=aether
 
 include $(INCLUDE_DIR)/package.mk
-include ../../lang/rust/rust-package.mk
+include $(TOPDIR)/feeds/packages/lang/rust/rust-package.mk
 
 # boring-sys generates bindings with host clang. Point clang at the OpenWrt
 # target headers so it does not parse the build host's libc headers as if they
