@@ -28,6 +28,7 @@ include $(TOPDIR)/feeds/packages/lang/rust/rust-package.mk
 # targets, so libc's Rust definitions must use the matching ABI as well.
 CARGO_PKG_VARS += \
 	BINDGEN_EXTRA_CLANG_ARGS="--target=$(RUSTC_TARGET_ARCH) --sysroot=$(TOOLCHAIN_DIR)" \
+	LIBCLANG_PATH="$(LIBCLANG_PATH)" \
 	RUST_LIBC_UNSTABLE_MUSL_V1_2_3=1
 
 define Package/aether
