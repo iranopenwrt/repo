@@ -1,0 +1,71 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C)
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+START=91
+STOP=10
+USE_PROCD=1
+
+PROG="/usr/bin/psiphon"
+SERVICE_NAME="psiphon"
+UCI_CONFIG="psiphon"
+
+
+validate_psiphon_section() {
+        config_get enabled "$1" enabled "0"
+        config_get conffile "$1" conffile "/etc/psiphon.config"
+        config_get logfile "$1" logfile "/var/log/psiphon.log"
+
+        [ "$enabled" = "1" ] || logger -s -t psiphon "service not enabled"
+
+        if [ ! -x "$PROG" ]; then
+                logger -s -t psiphon "binary not found or not executable: $PROG"
+                return 1
+        fi
+
+        if [ ! -f "$conffile" ]; then
+                logger -s -t psiphon "config file not found: $conffile"
+                return 1
+        fi
+
+        return 0
+}
+
+start_instance() {
+        local section="$1"
+
+        config_get enabled "$section" enabled "0"
+        config_get conffile "$section" conffile "$DEFAULT_CONFFILE"
+        config_get logfile "$section" logfile "$DEFAULT_LOGFILE"
+
+        [ "$enabled" = "1" ] || return
+
+        procd_open_instance "$section"
+        procd_set_param command \
+                "$PROG" \
+                -config "$conffile" \
+                -notices "$logfile"
+
+        # respawn policy: <threshold> <timeout> <retry>
+        procd_set_param respawn 3600 5 5
+
+        # nice cleanup
+        procd_set_param stdout 1
+        procd_set_param stderr 1
+
+        procd_set_param user root
+        procd_set_param group root
+
+        procd_close_instance
+}
+
+start_service() {
+        config_load "$UCI_CONFIG"
+        config_foreach validate_psiphon_section psiphon || return 0
+        config_foreach start_instance psiphon
+}
+
+
+service_triggers() {
+        procd_add_reload_trigger "$UCI_CONFIG"
+}
