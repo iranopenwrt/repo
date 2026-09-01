@@ -22,6 +22,11 @@ if [ -d /go-override/lang/golang ]; then
   rm -rf feeds/packages/lang/golang
   cp -a /go-override/lang/golang feeds/packages/lang/golang
   ./scripts/feeds update -i packages
+  go_version="$(sed -n 's/^[[:space:]]*GO_DEFAULT_VERSION:=[[:space:]]*//p' \
+    feeds/packages/lang/golang/golang-values.mk)"
+  test -n "$go_version"
+  ./scripts/feeds install -p packages -f \
+    golang "golang${go_version}" golang-bootstrap
 fi
 
 for source in $SOURCES; do
