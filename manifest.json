@@ -1,0 +1,342 @@
+{
+  "generated_at": "2026-09-02T13:05:31.025405+00:00",
+  "repositories": {
+    "25.12/aarch64_cortex-a53": {
+      "sources": {
+        "aether": {
+          "go_commit": "",
+          "outputs": [
+            {
+              "filename": "aether-1.7.0-r1.apk",
+              "sha256": "781f198b677f6d5cad3032110fa873514b7099da20371e9d68aa58faf273d45b"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.7.0"
+        },
+        "chisel": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "chisel-1.12.0-r1.apk",
+              "sha256": "85685908146df0ee452c5dd60591d3f14d30f0295d698b7226b517ad3e2ec401"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.12.0"
+        },
+        "paqet": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "paqet-1.0.0-r1.apk",
+              "sha256": "dd2c2ea8d2d44478416710765dacb91be785290cd4dee8e4123669438f790e0e"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.0.0"
+        },
+        "psiphon-tunnel-core": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "psiphon-2.0.40-r1.apk",
+              "sha256": "2dab1d7ebcea7b61075ab22ba16a202169a3ecc187c92922887dc3dfbd78cc7c"
+            },
+            {
+              "filename": "psiphond-2.0.40-r1.apk",
+              "sha256": "fcd1df04454c2f44ceea05dcf6a3a4b9bfe6ea93f461adc12eb54d4d9e16389f"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "2.0.40"
+        }
+      }
+    },
+    "25.12/aarch64_cortex-a72": {
+      "sources": {
+        "aether": {
+          "go_commit": "",
+          "outputs": [
+            {
+              "filename": "aether-1.7.0-r1.apk",
+              "sha256": "e938fc963ab0dbcf0fd06de189f51c6663d43b7120dbac380cbfc71b34e63c22"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.7.0"
+        },
+        "chisel": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "chisel-1.12.0-r1.apk",
+              "sha256": "40752417c5a0d4485027585a56162c0ad26e654960a3e8d409c34c770d068252"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.12.0"
+        },
+        "paqet": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "paqet-1.0.0-r1.apk",
+              "sha256": "62b79fbb1fd6e1e544ba2fd7a9d69a49ed69fd062075c2aeb3ac47d810bc7e6b"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.0.0"
+        },
+        "psiphon-tunnel-core": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "psiphon-2.0.40-r1.apk",
+              "sha256": "5c02de16a26d637a2ec5150daa2ba0ec1383731947c960715e77e9823be0e1ef"
+            },
+            {
+              "filename": "psiphond-2.0.40-r1.apk",
+              "sha256": "d7608db6b5ae6c1df6a276fc92c0b858cb00e5bbf6c8c5f811ddf8d0ec772e68"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "2.0.40"
+        }
+      }
+    },
+    "25.12/aarch64_cortex-a76": {
+      "sources": {
+        "aether": {
+          "go_commit": "",
+          "outputs": [
+            {
+              "filename": "aether-1.7.0-r1.apk",
+              "sha256": "7b49c6aead51256efa2705b8fe483514fd5605163b6b0ab41836795a7d38f6ce"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.7.0"
+        },
+        "chisel": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "chisel-1.12.0-r1.apk",
+              "sha256": "eb930a697d58c675f2053c28d43c66843158e9687826707935f2a4c4ec2b42aa"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.12.0"
+        },
+        "paqet": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "paqet-1.0.0-r1.apk",
+              "sha256": "866bc3822fe2e1d4f5298235a4121134aafb66de562ffc770e71d985ce0f5311"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.0.0"
+        },
+        "psiphon-tunnel-core": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "psiphon-2.0.40-r1.apk",
+              "sha256": "11f4267d812a6f799f3404d4cb26a51798fea251dac2a42ccf717e1c3301623a"
+            },
+            {
+              "filename": "psiphond-2.0.40-r1.apk",
+              "sha256": "ffc2ad7a3f44f5d22b992ae1954dd95c72ba24c05c1c9520a1e8b090a5cef9f8"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "2.0.40"
+        }
+      }
+    },
+    "25.12/arm_cortex-a7_neon-vfpv4": {
+      "sources": {
+        "aether": {
+          "go_commit": "",
+          "outputs": [
+            {
+              "filename": "aether-1.7.0-r1.apk",
+              "sha256": "16b8804b49f419862320e7d63cad06a99f691d09b2e620a065780eb9b8b7e1c7"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.7.0"
+        },
+        "chisel": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "chisel-1.12.0-r1.apk",
+              "sha256": "e8f2cdfe67654d419be62dc01f2ce0ad09a32d75de7eece71fa4fec45d063678"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.12.0"
+        },
+        "paqet": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "paqet-1.0.0-r1.apk",
+              "sha256": "3b87d0b107e0db6b118836cafd2c756765050947578f210a8ce829ddb5c5a29f"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.0.0"
+        },
+        "psiphon-tunnel-core": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "psiphon-2.0.40-r1.apk",
+              "sha256": "38953b9a0cac2e804f11f03dc823ed9bff3ce5b45fece9ecaf885c132dd608d6"
+            },
+            {
+              "filename": "psiphond-2.0.40-r1.apk",
+              "sha256": "25d938483b8e61e9f5e06a6b918591fac165e294b1d00c692f30412ae7d48098"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "2.0.40"
+        }
+      }
+    },
+    "25.12/arm_cortex-a9_vfpv3-d16": {
+      "sources": {
+        "aether": {
+          "go_commit": "",
+          "outputs": [
+            {
+              "filename": "aether-1.7.0-r1.apk",
+              "sha256": "fbcb7f97a105a4bbd4cb1aadf4f2fcd3d5a0a8ed832806cd66afb90bd48c2cf0"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.7.0"
+        },
+        "chisel": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "chisel-1.12.0-r1.apk",
+              "sha256": "1c701765657f745c91549689d79257ce19792c88cd229d89928a573fa4aaa2da"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.12.0"
+        },
+        "paqet": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "paqet-1.0.0-r1.apk",
+              "sha256": "d4f25963a3cf3815566e0c82b53986a10bb2c1fe1c566d4526104e13bdcde85d"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.0.0"
+        },
+        "psiphon-tunnel-core": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "psiphon-2.0.40-r1.apk",
+              "sha256": "501c1dd40cdebda10e145cfb71e913b5d5433d68310b756e30cedeb293f6e05a"
+            },
+            {
+              "filename": "psiphond-2.0.40-r1.apk",
+              "sha256": "dbcb2f6770aec439c29a6ec6f431ebddd2a6c22846fdc8dc32b6bced3f1373f9"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "2.0.40"
+        }
+      }
+    },
+    "25.12/x86_64": {
+      "sources": {
+        "aether": {
+          "go_commit": "",
+          "outputs": [
+            {
+              "filename": "aether-1.7.0-r1.apk",
+              "sha256": "fdfdbd082dc4e632b3bd1301fbffc72925af66764e5607f1dcabf71de4ec4bd5"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.7.0"
+        },
+        "chisel": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "chisel-1.12.0-r1.apk",
+              "sha256": "b14a493ce508a3b7c9cf57938139999251be43d616e17b6d416d7cf15368af76"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.12.0"
+        },
+        "paqet": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "paqet-1.0.0-r1.apk",
+              "sha256": "bc6dbb7fa9013d29fbb0a89a34fcafa435c24b2bbeced5d59b040147689b7768"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "1.0.0"
+        },
+        "psiphon-tunnel-core": {
+          "go_commit": "712ee13a837449fd91b5279048303d3a790d691b",
+          "outputs": [
+            {
+              "filename": "psiphon-2.0.40-r1.apk",
+              "sha256": "216aed49d844c8044a438cf8f83d210369eed42a1fc520235b3887e26409a17c"
+            },
+            {
+              "filename": "psiphond-2.0.40-r1.apk",
+              "sha256": "bc8761abde68ef8f54658cda986250c11ec170177094e2a54737451349db0646"
+            }
+          ],
+          "release": "1",
+          "sdk_version": "25.12.5",
+          "version": "2.0.40"
+        }
+      }
+    }
+  },
+  "schema": 1
+}
