@@ -1,5 +1,6 @@
 # IranOpenWrt repository
-
+## Prerequisite
+Running current stable OpenWrt (version 25.12 or newer from https://downloads.openwrt.org). 
 ## Usage
 
 ### Add repository signing key
