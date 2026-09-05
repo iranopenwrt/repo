@@ -8,7 +8,7 @@ set -euo pipefail
 if ! find -L /usr/lib/llvm-* -maxdepth 2 -type f \
   \( -name 'libclang.so' -o -name 'libclang.so.*' \) -print -quit 2>/dev/null | grep -q .; then
   apt-get update
-  apt-get install --no-install-recommends --yes wget gnupgca-certificates
+  apt-get install --no-install-recommends --yes wget gnupg ca-certificates
   wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc >/dev/null
   echo 'deb http://apt.llvm.org/bullseye/ llvm-toolchain-bullseye-21 main' > /etc/apt/sources.list.d/llvm.list
   apt-get update
