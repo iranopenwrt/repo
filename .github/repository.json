@@ -7,8 +7,8 @@
     }
   ],
   "architectures": [
-    "aarch64_generic",
     "arm_cortex-a7_neon-vfpv4",
+    "aarch64_generic",
     "aarch64_cortex-a53",
     "aarch64_cortex-a72",
     "aarch64_cortex-a76",
