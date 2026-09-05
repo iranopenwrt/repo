@@ -1,8 +1,7 @@
 name: Build and publish APK repository
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: apk-repository-publish
